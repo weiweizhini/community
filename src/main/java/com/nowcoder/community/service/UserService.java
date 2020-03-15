@@ -2,6 +2,7 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
-public class UserService {
+public class UserService implements CommunityConstant {
 
     @Autowired
     private UserMapper userMapper;
@@ -54,20 +55,20 @@ public class UserService {
             return map;
         }
         if(StringUtils.isBlank(user.getEmail())){
-            map.put("EmailMsg","邮箱不能为空");
+            map.put("emailMsg","邮箱不能为空");
             return map;
         }
 
         //验证账号
         User u = userMapper.selectByName(user.getUsername());
-        if(u == null){
+        if(u != null){
             map.put("usernameMsg","该账号已存在！");
             return map;
         }
 
         //验证邮箱
         u = userMapper.selectByEmail(user.getEmail());
-        if(u == null) {
+        if(u != null) {
             map.put("emailMsg", "该邮箱已存在！");
             return map;
         }
@@ -85,9 +86,9 @@ public class UserService {
 
         //激活邮件
         Context context = new Context();
-        context.setVariable("eamil",user.getEmail());
+        context.setVariable("email",user.getEmail());
         //http://localhost:8080/community/activation/101/code
-        String url = domain + contextPath + "activation" + user.getId() + user.getActivationCode();
+        String url = domain + contextPath + "/activation/" + user.getId() + "/"+ user.getActivationCode();
         context.setVariable("url", url);
         String content = templateEngine.process("/mail/activation",context);
         mailClient.sendMail(user.getEmail(),"激活账号", content);
@@ -95,6 +96,18 @@ public class UserService {
         return map;
     }
 
+    //激活方法
+    public int activation(int userId, String code){
+        User user = userMapper.selectById(userId);
+        if(user.getStatus() == 1){
+            return ACTIVATION_REPEAT;
+        }else if(user.getActivationCode().equals(code)){
+            userMapper.updateStatus(userId, 1);
+            return ACTIVATION_SUCCESS;
+        }else{
+            return ACTIVATION_FAILURE;
+        }
+    }
 
 
 }
