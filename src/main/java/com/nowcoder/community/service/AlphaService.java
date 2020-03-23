@@ -10,15 +10,15 @@ import javax.annotation.PreDestroy;
 //@Scope("prototype")
 public class AlphaService {
 
-    public AlphaService(){
-        System.out.println("实例化AlphaService");
-    }
-    @PostConstruct
-    public  void init(){
-        System.out.println("初始化AlphaService");
-    }
-    @PreDestroy
-    public void destroy(){
-        System.out.println("销毁AlphaService");
-    }
+//    public AlphaService(){
+//        System.out.println("实例化AlphaService");
+//    }
+//    @PostConstruct
+//    public  void init(){
+//        System.out.println("初始化AlphaService");
+//    }
+//    @PreDestroy
+//    public void destroy(){
+//        System.out.println("销毁AlphaService");
+//    }
 }
